@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'BizRequest.dart';
 import 'Indicator.dart';
@@ -12,6 +13,8 @@ class MainPageState extends State<MainPage> {
   final indicatorController = IndicatorController();
   final qrCodeController = QRContentController();
 
+  final messageChannel = const BasicMessageChannel<Object>('flutter/lifecycle', StringCodec());
+
   var isloading = false;
 
   @override
@@ -19,6 +22,14 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     loadQRContent();
+
+    messageChannel.setMessageHandler((message) async {
+
+      if(message == 'AppLifecycleState.resumed') {
+
+        loadQRContent();
+      }
+    });
   }
 
   loadQRContent() async {
